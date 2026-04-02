@@ -1,8 +1,9 @@
-name: Python CI with Audit
+name: Python CI (Windows)
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,31 +21,25 @@ jobs:
     - name: Create virtual environment
       run: |
         python -m venv venv
-        source venv/Scripts/activate
 
     - name: Install dependencies
       run: |
-        source venv/Scripts/activate
-        pip install --upgrade pip
-        pip install -r requirements.txt || true
+        venv\Scripts\pip install --upgrade pip
+        venv\Scripts\pip install -r requirements.txt
 
-    - name: Check dependencies (pip check)
+    - name: Check dependencies
       run: |
-        source venv/Scripts/activate
-        pip check
+        venv\Scripts\pip check
 
     - name: Run security audit
       run: |
-        source venv/Scripts/activate
-        pip install pip-audit
-        pip-audit -r requirements.txt || true
+        venv\Scripts\pip install pip-audit
+        venv\Scripts\pip-audit -r requirements.txt
 
-    - name:  to fix vulnerabilities
+    - name: Try to fix vulnerabilities
       run: |
-        source venv/Scripts/activate
-        pip-audit --fix -r requirements.txt || true
+        venv\Scripts\pip-audit --fix -r requirements.txt
 
     - name: Re-check after fix
       run: |
-        source venv/Scripts/activate
-        pip check
+        venv\Scripts\pip check
